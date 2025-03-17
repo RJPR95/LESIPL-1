@@ -4,12 +4,12 @@
  *  @date 2025-03-07
  *  @project Aula 5 - Memoria Dinamic
  *
- *  Apontadores em Estruturas de dados dinâmicas.
+ *  Apontadores em Estruturas de dados dinï¿½micas.
  */
 
 #include "Dados.h"
 #include <stdio.h>
-#include <malloc.h>		//função malloc()
+#include <malloc.h>		//funï¿½ï¿½o malloc()
 #include <string.h>
 
 #pragma warning (disable:4996)
@@ -63,7 +63,7 @@ void main() {
 
 	Erasmus a4;
 	a4.a.num = 23;;
-	strcpy(a4.pais, "França");
+	strcpy(a4.pais, "Franï¿½a");
 	a4.next = NULL;
 	
 	
@@ -84,8 +84,8 @@ void main() {
 
 #pragma endregion
 
-//libertar memória
-//free(p);	//ERRO pois p não foi criado com malloc()
+//libertar memï¿½ria
+//free(p);	//ERRO pois p nï¿½o foi criado com malloc()
 free(k);
 free(turma);
 

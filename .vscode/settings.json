@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "malloc.h": "c"
+    },
+    "dotnet.defaultSolution": "ConsoleApp2.sln"
+}
