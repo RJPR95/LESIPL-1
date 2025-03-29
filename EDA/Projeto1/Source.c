@@ -23,19 +23,20 @@ void main() {
 
     char line[256];
     int row = 0;
-    int areaNefasta = 0;
+    int nefariousArea = 0;
 
     printf("Qual a área nefasta das antenas: ");
-    scanf("%d", &areaNefasta);
+    scanf("%d", &nefariousArea);
 
     ED *head = NULL; // Head of the linked list
+    ED *nefariousHead = NULL; // Head of the nefarious linked list
 
     // Read the file line by line.
     // For each character in the line, create a new antenna.
     // Print the frequency, latitude and longitude of the antenna.
     while (fgets(line, sizeof(line), file)) {
         for (int col = 0; line[col] != '\0'; col++) {
-            if (line[col] != '\n') {
+            if (line[col] != '.' && line[col] != '\n') {
                 ED *a = (ED *)malloc(sizeof(ED));
 
                 // Check if the memory allocation was successful.
@@ -46,8 +47,7 @@ void main() {
                     exit(EXIT_FAILURE);
                 }
 
-                a = CriarAntena(line[col], row, col);3
-                
+                a = CreateAntenna(line[col], row, col);
 
                 // Add the antenna to the linked list.
                 // If the linked list is empty, set the head to the new antenna.
@@ -72,27 +72,34 @@ void main() {
     ED *aux = head;
     while(aux != NULL) {
         if(aux->frequency != '.'){
-            int lineSearch = -areaNefasta ;
+            int lineSearch = -nefariousArea ;
 
-            while(lineSearch <= areaNefasta){
-                int colSearch = -areaNefasta;
-                while(colSearch <= areaNefasta){
-                    ED *antenaEncontrada = ProcurarAntena(  head, 
-                                                            aux->frequency, 
-                                                            aux->coords.linha + lineSearch, 
-                                                            aux->coords.coluna + colSearch);
+            while(lineSearch <= nefariousArea){
+                int colSearch = -nefariousArea;
+                while(colSearch <= nefariousArea){
+                    ED *foundAntenna = SearchAntennaByFrequency(
+                        head, 
+                        aux->frequency, 
+                        aux->coords.line + lineSearch, 
+                        aux->coords.col + colSearch);
 
-                    if( antenaEncontrada != NULL && 
-                        (antenaEncontrada->coords.linha != aux->coords.linha || 
-                        antenaEncontrada->coords.coluna != aux->coords.coluna)) {
+                    if(foundAntenna != NULL && 
+                        (foundAntenna->coords.line != aux->coords.line || 
+                            foundAntenna->coords.col != aux->coords.col)) {
 
-                        ED *antenaNefasta = ProcurarAntena( head, 
-                                                            '.', 
-                                                            aux->coords.linha + (2 * lineSearch), 
-                                                            aux->coords.coluna + (2 * colSearch));
+                        ED *nefariousAntenna = SearchAntenna( nefariousHead, 
+                                                            aux->coords.line + (2 * lineSearch), 
+                                                            aux->coords.col + (2 * colSearch));
                 
-                        if(antenaNefasta != NULL) {
-                            antenaNefasta->isNefasto = true;
+                        if(nefariousAntenna != NULL) {
+                            nefariousAntenna->isNefarious = true;
+                        } else {
+                            nefariousAntenna = CreateAntenna('.', 
+                                                            aux->coords.line + (2 * lineSearch), 
+                                                            aux->coords.col + (2 * colSearch));
+                            nefariousAntenna->isNefarious = true;
+                            nefariousAntenna->next = nefariousHead;
+                            nefariousHead = nefariousAntenna;
                         }
                     }
                     colSearch++;
@@ -100,71 +107,6 @@ void main() {
                 lineSearch++;
 
             }
-            // ED *antenaEncontradaNorte = ProcurarAntena(head, aux->frequency, aux->coords.linha - 2, aux->coords.coluna);
-            // ED *antenaEncontradaNordeste = ProcurarAntena(head, aux->frequency, aux->coords.linha - 2, aux->coords.coluna - 2);
-            // ED *antenaEncontradaNoroeste = ProcurarAntena(head, aux->frequency, aux->coords.linha - 2, aux->coords.coluna + 2);
-            // ED *antenaEncontradaSul = ProcurarAntena(head, aux->frequency, aux->coords.linha + 2, aux->coords.coluna);
-            // ED *antenaEncontradaSudeste = ProcurarAntena(head, aux->frequency, aux->coords.linha + 2, aux->coords.coluna - 2);
-            // ED *antenaEncontradaSudoeste = ProcurarAntena(head, aux->frequency, aux->coords.linha + 2, aux->coords.coluna + 2);
-            // ED *antenaEncontradaEste = ProcurarAntena(head, aux->frequency, aux->coords.linha, aux->coords.coluna - 2);
-            // ED *antenaEncontradaOeste = ProcurarAntena(head, aux->frequency, aux->coords.linha, aux->coords.coluna + 2);
-
-            // if(antenaEncontradaNorte != NULL) {
-            //     ED *antenaNefastaNorte = ProcurarAntena(head, '.', aux->coords.linha - 4, aux->coords.coluna);
-                
-            //     if(antenaNefastaNorte != NULL) {
-            //         antenaNefastaNorte->isNefasto = true;
-            //     }
-            // }
-            // if(antenaEncontradaNordeste != NULL) {
-            //     ED *antenaNefastaNordeste = ProcurarAntena(head, '.', aux->coords.linha - 4, aux->coords.coluna - 4);
-                
-            //     if(antenaNefastaNordeste != NULL) {
-            //         antenaNefastaNordeste->isNefasto = true;
-            //     }
-            // }
-            // if(antenaEncontradaNoroeste != NULL) {
-            //     ED *antenaNefastaNoroeste = ProcurarAntena(head, '.', aux->coords.linha - 4, aux->coords.coluna + 4);
-                
-            //     if(antenaNefastaNoroeste != NULL) {
-            //         antenaNefastaNoroeste->isNefasto = true;
-            //     }
-            // }
-            // if(antenaEncontradaSul != NULL) {
-            //     ED *antenaNefastaSul = ProcurarAntena(head, '.', aux->coords.linha + 4, aux->coords.coluna);
-                
-            //     if(antenaNefastaSul != NULL) {
-            //         antenaNefastaSul->isNefasto = true;
-            //     }
-            // }
-            // if(antenaEncontradaSudeste != NULL) {
-            //     ED *antenaNefastaSudeste = ProcurarAntena(head, '.', aux->coords.linha + 4, aux->coords.coluna - 4);
-                
-            //     if(antenaNefastaSudeste != NULL) {
-            //         antenaNefastaSudeste->isNefasto = true;
-            //     }
-            // }
-            // if(antenaEncontradaSudoeste != NULL) {
-            //     ED *antenaNefastaSudoeste = ProcurarAntena(head, '.', aux->coords.linha + 4, aux->coords.coluna + 4);
-                
-            //     if(antenaNefastaSudoeste != NULL) {
-            //         antenaNefastaSudoeste->isNefasto = true;
-            //     }
-            // }
-            // if(antenaEncontradaEste != NULL) {
-            //     ED *antenaNefastaEste = ProcurarAntena(head, '.', aux->coords.linha, aux->coords.coluna - 4);
-
-            //     if(antenaNefastaEste != NULL) {
-            //         antenaNefastaEste->isNefasto = true;
-            //     }
-            // }
-            // if(antenaEncontradaOeste != NULL) {
-            //     ED *antenaNefastaOeste = ProcurarAntena(head, '.', aux->coords.linha, aux->coords.coluna + 4);
-
-            //     if(antenaNefastaOeste != NULL) {
-            //         antenaNefastaOeste->isNefasto = true;
-            //     }
-            // }
         }
 
         aux = aux->next;
@@ -173,23 +115,52 @@ void main() {
 
     // Print the antennas.
     aux = head;
+    row = 0;
+    int col = 0;
     int previousRow = 0;
-    while(aux != NULL) {
 
-        if (previousRow != aux->coords.linha) {
-            printf("\n");
-            previousRow = aux->coords.linha;
+    for(int i = 0; i < N_LINES; i++) {
+        for(int j = 0; j < N_COLS; j++) {
+            ED *foundAntenna = SearchAntenna(head, i, j);
+
+            if(foundAntenna != NULL) {
+                printf("%c", foundAntenna->frequency);
+            } else {
+                ED *nefariousAntenna = SearchAntenna(nefariousHead, i, j);
+
+                if(nefariousAntenna != NULL) {
+                    printf("#");
+                } else {
+                    printf(".");
+                }
+            }
         }
-
-        printf("%c", !aux->isNefasto ? aux->frequency : '#');
-
-        // Set a new aux variable so we can free the memory of the current antenna.
-        ED *aux2 = aux;
-        aux = aux2->next;
-
-        // Free the memory of the current antenna.
-        // free(aux2);
+        printf("\n");
     }
 
+    if(nefariousHead != NULL) {
+        printf(("Parece que existem áreas nefasta(s) na rede.\n"));
+        printf("As áreas nefastas são:\n");
+        aux = nefariousHead;
+        while(aux != NULL) {
+            if(aux->coords.line >= 0 && aux->coords.col >= 0) {
+                printf("Linha: %d, Coluna: %d\n", aux->coords.line, aux->coords.col);
+            }
+            aux = aux->next;
+        }
+        printf("\nQual a antena que deseja remover para tentar resolver as áreas nefastas?\n");
+        printf("Linha: ");
+        scanf("%d", &row);
+        printf("Coluna: ");
+        scanf("%d", &col);
+        ED *foundAntenna = SearchAntenna(head, row, col);
+        if(foundAntenna != NULL) {
+            removeAntenna(head, row, col);
+            printf("Antena removida com sucesso!\n");
+        } else {
+            printf("Antena não encontrada!\n");
+        }
+    }
+    
     return;
 }

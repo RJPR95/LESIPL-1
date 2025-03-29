@@ -14,17 +14,17 @@
 #include <string.h>
 #include <stdbool.h>
 
-#define MAX_LINHAS 10
-#define MAX_COLUNAS 10
+#define N_LINES 12
+#define N_COLS 12
 
 /**
  * @brief The coordinates.
- * @param linha The line.
- * @param coluna The column.
+ * @param line The line of the coordinates.
+ * @param col The column of the coordinates.
  */
 typedef struct Coords {
-    int linha;
-    int coluna;
+    int line;
+    int col;
 } Coords;
 
 /**
@@ -32,10 +32,11 @@ typedef struct Coords {
  * @param frequency The frequency of the antenna.
  * @param coords The coordinates of the antenna.
  * @param next The next antenna.
+ * @param isNefarious The antenna is nefasta.
  */
 typedef struct ED {
     char frequency;
     struct Coords coords;
     struct ED* next;
-    bool isNefasto;
+    bool isNefarious;
 } ED;
