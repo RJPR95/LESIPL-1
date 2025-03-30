@@ -8,13 +8,13 @@
 #include "Dados.h"
 
 #pragma region "Antenna Management"
-    /**
-     * @brief Create a new antenna.
-     * @param freq The frequency of the antenna.
-     * @param line The line of the antenna.
-     * @param col The column of the antenna.
-     * @return A pointer to the new antenna.
-     */
+     /**
+      * @brief Create a new antenna.
+      * @param freq The frequency of the antenna.
+      * @param line The line of the antenna.
+      * @param col The column of the antenna.
+      * @return A pointer to the new antenna.
+      */
     ED* CreateAntenna(char freq, int line, int col) {
         ED* new_antena = (ED*)malloc(sizeof(ED));
         new_antena->frequency = freq;
@@ -70,7 +70,7 @@
      * @param col The column of the antenna.
      * @return True if the antenna was added successfully, false otherwise.
      */
-    bool AddAntennaToCoords(ED* head, char freq, int line, int col) {
+    bool AddAntennaToCoords(ED** head, char freq, int line, int col) {
         // Check if the coordinates are valid
         if (line < 0 || line >= N_LINES || col < 0 || col >= N_COLS) {
             printf("\n-- ERROR: Invalid coordinates! --\n\n");
@@ -78,17 +78,18 @@
         }
 
         // Check if the coordinates are already occupied
-        ED* occupiedAntenna = SearchAntenna(head, line, col);
+        ED* occupiedAntenna = SearchAntenna(*head, line, col);
         if (occupiedAntenna != NULL) {
             printf("\n-- ERROR: Coordinates already occupied! --\n\n");
             return false;
         }
         // Create a new antenna and add it to the linked list
         ED* new_antena = CreateAntenna(freq, line, col);
-        if (head == NULL) {
-            head = new_antena;
-        } else {
-            ED* aux = head;
+        if (*head == NULL) {
+            *head = new_antena;
+        }
+        else {
+            ED* aux = *head;
             while (aux->next != NULL) {
                 aux = aux->next;
             }
@@ -113,7 +114,8 @@
             if (aux->coords.line == line && aux->coords.col == col) {
                 if (prev == NULL) {
                     head = aux->next;
-                } else {
+                }
+                else {
                     prev->next = aux->next;
                 }
 
@@ -139,38 +141,41 @@
         int nefariousArea = 0;
 
         printf("What is the nefarious area around the antennas: ");
-        scanf("%d", &nefariousArea);
+        scanf_s("%d", &nefariousArea);
 
-        system("clear");
-        
-        ED *aux = head;
-        while(aux != NULL) {
-            if(aux->frequency != '.'){
-                int lineSearch = -nefariousArea ;
+        system(CLEAR);
 
-                while(lineSearch <= nefariousArea){
-                    int colSearch = -nefariousArea;
-                    while(colSearch <= nefariousArea){
-                        ED *foundAntenna = SearchAntennaByFrequency(
-                            head, 
-                            aux->frequency, 
-                            aux->coords.line + lineSearch, 
+        ED* aux = head;
+        while (aux != NULL) {
+            if (aux->frequency != '.') {
+                int lineSearch = -nefariousArea; // Initialize the line we are going to search.
+
+				// Search the nefarious area around the antenna.
+                while (lineSearch <= nefariousArea) {
+                    int colSearch = -nefariousArea; // Initialize the column we are going to search.
+                    while (colSearch <= nefariousArea) {
+                        ED* foundAntenna = SearchAntennaByFrequency(
+                            head,
+                            aux->frequency,
+                            aux->coords.line + lineSearch,
                             aux->coords.col + colSearch);
 
-                        if(foundAntenna != NULL && 
-                            (foundAntenna->coords.line != aux->coords.line || 
+						// If the antenna is found and it is not the same antenna, add the nefarious area.
+                        if (foundAntenna != NULL &&
+                            (foundAntenna->coords.line != aux->coords.line ||
                                 foundAntenna->coords.col != aux->coords.col)) {
 
-                            ED *nefariousAntenna = SearchAntenna( nefariousHead, 
-                                                                aux->coords.line + (2 * lineSearch), 
-                                                                aux->coords.col + (2 * colSearch));
-                    
-                            if(nefariousAntenna != NULL) {
+                            ED* nefariousAntenna = SearchAntenna(nefariousHead,
+                                aux->coords.line + (2 * lineSearch),
+                                aux->coords.col + (2 * colSearch));
+
+                            if (nefariousAntenna != NULL) {
                                 nefariousAntenna->isNefarious = true;
-                            } else {
-                                nefariousAntenna = CreateAntenna('.', 
-                                                                aux->coords.line + (2 * lineSearch), 
-                                                                aux->coords.col + (2 * colSearch));
+                            }
+                            else {
+                                nefariousAntenna = CreateAntenna('.',
+                                    aux->coords.line + (2 * lineSearch),
+                                    aux->coords.col + (2 * colSearch));
                                 nefariousAntenna->isNefarious = true;
                                 nefariousAntenna->next = nefariousHead;
                                 nefariousHead = nefariousAntenna;
@@ -198,39 +203,38 @@
      */
     bool GetAntennasFromFile(char* fileName) {
         // Open the file.
-        FILE *file = fopen(fileName, "rb");
+        FILE* file = fopen(fileName, "rb");
 
         // Check if the file was opened successfully.
         // If not, print an error message and exit the program.
-        if (file == NULL) {
-            perror("Error opening file");
-            exit(EXIT_FAILURE);
-        }
+        if (file != NULL) {
 
-        // Temporary variable to hold data read from the file.
-        EDFile auxElement;
+            // Temporary variable to hold data read from the file.
+            EDFile auxElement;
 
-        // Read the file until the end.
-        while (fread(&auxElement, sizeof(EDFile), 1, file)) {
-            // Create a new antenna using the data read from the file.
-            ED *a = CreateAntenna(auxElement.frequency, auxElement.coords.line, auxElement.coords.col);
+            // Read the file until the end.
+            while (fread(&auxElement, sizeof(EDFile), 1, file)) {
+                // Create a new antenna using the data read from the file.
+                ED* a = CreateAntenna(auxElement.frequency, auxElement.coords.line, auxElement.coords.col);
 
-            // Add the antenna to the linked list.
-            if (head == NULL) {
-                head = a;
-            } else {
-                ED *aux = head;
-                while (aux->next != NULL) {
-                    aux = aux->next;
+                // Add the antenna to the linked list.
+                if (head == NULL) {
+                    head = a;
                 }
-                aux->next = a;
+                else {
+                    ED* aux = head;
+                    while (aux->next != NULL) {
+                        aux = aux->next;
+                    }
+                    aux->next = a;
+                }
             }
+
+            fclose(file);
+
+            // Get nefarious areas.
+            GetNefariousAreas(head);
         }
-
-        fclose(file);
-
-        // Get nefarious areas.
-        GetNefariousAreas(head);
 
         return true;
     }
@@ -263,6 +267,7 @@
 
         return true;
     }
+
 #pragma endregion
 
 #pragma region "Output Functions"
@@ -273,24 +278,27 @@
          */
         void MenuPrintAntennas(ED* head) {
             printf("    1  2  3  4  5  6  7  8  9  10 11 12  \n");
-            for(int i = 0; i < N_LINES; i++) {
-                if(i < 9) {
+            for (int i = 0; i < N_LINES; i++) {
+                if (i < 9) {
                     printf(" %d ", i + 1);
-                } else {
+                }
+                else {
                     printf("%d ", i + 1);
                 }
 
-                for(int j = 0; j < N_COLS; j++) {
-                    ED *foundAntenna = SearchAntenna(head, i, j);
-        
-                    if(foundAntenna != NULL) {
+                for (int j = 0; j < N_COLS; j++) {
+                    ED* foundAntenna = SearchAntenna(head, i, j);
+
+                    if (foundAntenna != NULL) {
                         printf(" %c ", foundAntenna->frequency);
-                    } else {
-                        ED *nefariousAntenna = SearchAntenna(nefariousHead, i, j);
-        
-                        if(nefariousAntenna != NULL) {
+                    }
+                    else {
+                        ED* nefariousAntenna = SearchAntenna(nefariousHead, i, j);
+
+                        if (nefariousAntenna != NULL) {
                             printf("\033[1;31m # \033[0m");
-                        } else {
+                        }
+                        else {
                             printf("\033[2m . \033[0m");
                         }
                     }
@@ -309,29 +317,29 @@
          */
         void MenuAddAntenna() {
             printf("=========== Add Antenna ===========\n");
-            
+
             int line;
             int col;
             char freq;
 
             // Print the antennas in the linked list.
             MenuPrintAntennas(head);
-            
+
             // Ask for the coordinates and frequency of the antenna to add.
             printf("Antenna frequency: ");
-            scanf(" %c", &freq);
+            scanf_s(" %c", &freq);
             printf("Antenna line: ");
-            scanf("%d", &line);
+            scanf_s("%d", &line);
             printf("Antenna column: ");
-            scanf("%d", &col);
-            
-            system("clear");
+            scanf_s("%d", &col);
+
+            system(CLEAR);
 
             // Check if the antenna was added successfully.
-            bool wasAdded = AddAntennaToCoords(head, freq, line - 1, col - 1);
+            bool wasAdded = AddAntennaToCoords(&head, freq, line - 1, col - 1);
 
             // If the antenna was added successfully, print a success message.
-            if(wasAdded) {
+            if (wasAdded) {
                 printf("\n-- Antenna added successfully! --\n\n");
                 SaveFile("antenas", head);
                 GetNefariousAreas(head);
@@ -352,56 +360,57 @@
 
             // Ask for the coordinates of the antenna to remove.
             printf("Antenna line: ");
-            scanf("%d", &line);
+            scanf_s("%d", &line);
             printf("Antenna column: ");
-            scanf("%d", &col);
-            
-            system("clear");
+            scanf_s("%d", &col);
+
+            system(CLEAR);
 
             // Remove the antenna from the linked list.
             // If the antenna is found, remove it.
             // Otherwise, print an error message.
-            if(RemoveAntenna(head, line - 1, col - 1)) {
+            if (RemoveAntenna(head, line - 1, col - 1)) {
                 printf("\n-- Antenna removed successfully! --\n\n");
                 SaveFile("antenas", head);
                 GetNefariousAreas(head);
-            } else {
+            }
+            else {
                 printf("\n-- ERROR: Antenna not found! --\n\n");
             }
         }
-    
+
         /**
          * @brief Show the menu for managing antennas.
          */
         void ShowMenu() {
-            int option;
+            int option = -1;
 
-            while(option != 4) {
+            while (option != 4) {
                 printf("1. Add Antenna\n");
                 printf("2. Remove Antenna\n");
                 printf("3. Show Antennas\n");
                 printf("4. Exit\n");
                 printf("Choose an option (1, 2, 3 or 4): ");
-                scanf("%d", &option);
+                scanf_s("%d", &option);
 
-                system("clear");
+                system(CLEAR);
 
-                switch(option) {
-                    case 1:
-                        MenuAddAntenna();
-                        break;
-                    case 2:
-                        MenuRemoveAntenna();
-                        break;
-                    case 3:
-                        system("clear");
-                        printf("============ Show Antennas ===========\n");
-                        MenuPrintAntennas(head);
-                        break;
-                    case 4:
-                        exit(0);
-                    default:
-                        printf("\n-- ERROR: Invalid Option! --\n\n");
+                switch (option) {
+                case 1:
+                    MenuAddAntenna();
+                    break;
+                case 2:
+                    MenuRemoveAntenna();
+                    break;
+                case 3:
+                    system(CLEAR);
+                    printf("============ Show Antennas ===========\n");
+                    MenuPrintAntennas(head);
+                    break;
+                case 4:
+                    exit(0);
+                default:
+                    printf("\n-- ERROR: Invalid Option! --\n\n");
                 }
             }
         }
@@ -413,62 +422,63 @@
      * @param head The head of the linked list.
      */
     void AskForNefariousAreaCorrection(ED* head) {
-        while(nefariousHead != NULL){
+        while (nefariousHead != NULL) {
             ED* aux = head;
             int row = 0;
             int col = 0;
 
             int option;
-            
+
             printf("\n");
-            printf(("Parece que existem Ã¡reas nefasta(s) na rede.\n"));
-            printf("As Ã¡reas nefastas sÃ£o:\n");
+            printf(("Parece que existem áreas nefasta(s) na rede.\n"));
+            printf("As áreas nefastas são:\n");
             aux = nefariousHead;
-            while(aux != NULL) {
-                if(aux->coords.line >= 0 && aux->coords.col >= 0) {
+            while (aux != NULL) {
+                if (aux->coords.line >= 0 && aux->coords.col >= 0) {
                     printf("Linha: %d, Coluna: %d\n", aux->coords.line, aux->coords.col);
                 }
                 aux = aux->next;
             }
             printf("\n");
-            printf("Deseja remover alguma antena para tentar resolver as Ã¡reas nefastas? (1 - Sim, 0 - NÃ£o)\n");
-            scanf("%d", &option);
+            printf("Deseja remover alguma antena para tentar resolver as áreas nefastas? (1 - Sim, 0 - Não)\n");
+            scanf_s("%d", &option);
 
             // Check if the user wants to remove an antenna.
-            if(option == 0) {
-                system("clear");
+            if (option == 0) {
+                system(CLEAR);
                 break;
             }
-            if(option != 1) {
-                printf("-- OpÃ§Ã£o invÃ¡lida! --\n\n");
+            if (option != 1) {
+                printf("-- Opção inválida! --\n\n");
                 continue;
             }
 
             // Ask for the coordinates of the antenna to remove.
             printf("----------------------------\n");
-            printf("\nQual a antena que deseja remover para tentar resolver as Ã¡reas nefastas?\n");
+            printf("\nQual a antena que deseja remover para tentar resolver as áreas nefastas?\n");
             printf("Linha: ");
-            scanf("%d", &row);
+            scanf_s("%d", &row);
             printf("Coluna: ");
-            scanf("%d", &col);
+            scanf_s("%d", &col);
 
             // Remove 1 from the coordinates to match the array index.
             row--;
             col--;
 
             // Search for the antenna in the linked list.
-            ED *foundAntenna = SearchAntenna(head, row, col);
+            ED* foundAntenna = SearchAntenna(head, row, col);
 
             // If the antenna is found, remove it.
             // Otherwise, print an error message.
-            if(foundAntenna != NULL) {
+            if (foundAntenna != NULL) {
                 RemoveAntenna(head, row, col);
                 printf("Antena removida com sucesso!\n");
 
                 SaveFile("antenas", head);
                 GetAntennasFromFile("antenas");
-            } else {
-                printf("Antena nÃ£o encontrada!\n");
+            }
+            else {
+                printf("Antena não encontrada!\n");
             }
 
             printf("----------------------------\n\n");

@@ -8,5 +8,5 @@
 
 #include "Dados.h"
 
-ED *head = NULL; // Head of the linked list
-ED *nefariousHead = NULL; // Head of the nefarious linked list
+ED* head = NULL; // Head of the linked list
+ED* nefariousHead = NULL; // Head of the nefarious linked list
