@@ -14,6 +14,9 @@
 #include <string.h>
 #include <stdbool.h>
 
+/**
+ * @brief The number of lines and columns.
+ */
 #define N_LINES 12
 #define N_COLS 12
 
@@ -28,7 +31,7 @@ typedef struct Coords {
 } Coords;
 
 /**
- * @brief The antenna.
+ * @brief The antenna structure.
  * @param frequency The frequency of the antenna.
  * @param coords The coordinates of the antenna.
  * @param next The next antenna.
@@ -40,3 +43,19 @@ typedef struct ED {
     struct ED* next;
     bool isNefarious;
 } ED;
+
+/**
+ * @brief The antenna file structure.
+ * @param frequency The frequency of the antenna.
+ * @param coords The coordinates of the antenna.
+ */
+typedef struct EDFile {
+	char frequency;
+    struct Coords coords;
+}EDFile;
+
+/**
+ * @brief Declares the antennas and nefarious areas heads.
+ */
+extern ED *head; // Head of the linked list
+extern ED *nefariousHead; // Head of the nefarious linked list

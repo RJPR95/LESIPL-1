@@ -1,6 +1,9 @@
 {
     "files.associations": {
-        "malloc.h": "c"
+        "malloc.h": "c",
+        "dados.h": "c",
+        "functions.h": "c",
+        "random": "c"
     },
     "dotnet.defaultSolution": "ConsoleApp2.sln"
 }
