@@ -1,0 +1,10 @@
+﻿  Functions.c
+C:\Users\raulo\source\repos\Projeto1\Functions.c(330,21): warning C4473: 'scanf_s' : não há argumentos suficientes transmitidos para a cadeia de caracteres de formato
+      C:\Users\raulo\source\repos\Projeto1\Functions.c(330,21):
+      espaços reservados e seus parâmetros esperam 2 argumentos variadic, mas 1 foram fornecidos
+      C:\Users\raulo\source\repos\Projeto1\Functions.c(330,21):
+      o argumento variadic 2 ausente é requerido pela cadeia de formato '%c'
+      C:\Users\raulo\source\repos\Projeto1\Functions.c(330,21):
+      esse argumento é usado como um tamanho do buffer
+  
+  Projeto1.vcxproj -> C:\Users\raulo\source\repos\Projeto1\x64\Debug\Projeto1.exe

@@ -14,17 +14,26 @@
 #include <string.h>
 #include <stdbool.h>
 
-/**
- * @brief The number of lines and columns.
- */
+ /**
+  * @brief The number of lines and columns.
+  */
 #define N_LINES 12
 #define N_COLS 12
 
-/**
- * @brief The coordinates.
- * @param line The line of the coordinates.
- * @param col The column of the coordinates.
- */
+  /**
+   * @brief The clear screen command.
+   */
+#ifdef _WIN32
+    #define CLEAR "cls"
+#else
+    #define CLEAR "clear"
+#endif
+
+  /**
+   * @brief The coordinates.
+   * @param line The line of the coordinates.
+   * @param col The column of the coordinates.
+   */
 typedef struct Coords {
     int line;
     int col;
@@ -50,12 +59,12 @@ typedef struct ED {
  * @param coords The coordinates of the antenna.
  */
 typedef struct EDFile {
-	char frequency;
+    char frequency;
     struct Coords coords;
 }EDFile;
 
 /**
  * @brief Declares the antennas and nefarious areas heads.
  */
-extern ED *head; // Head of the linked list
-extern ED *nefariousHead; // Head of the nefarious linked list
+extern ED* head; // Head of the linked list
+extern ED* nefariousHead; // Head of the nefarious linked list
